@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+require 'bundler/setup'
+require 'icalendar'
+require 'csv'
+
+ics = ARGV[0]
+File.open(ics, "r:utf-8") do |io|
+  calendars = Icalendar::Calendar.parse(io)
+  CSV.open("#{ics}.csv", 'wb', col_sep: "\t") do |csv|
+    csv << %w[DTSTART DTEND SUMMARY]
+    calendars.each do |calendar|
+      calendar.events.each do |event|
+        csv << [event.dtstart, event.dtend, event.summary]
+      end
+    end
+  end
+end
+
